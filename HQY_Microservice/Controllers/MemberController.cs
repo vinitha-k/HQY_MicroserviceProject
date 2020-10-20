@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using HQY_Microservice.Repository;
@@ -14,26 +17,33 @@ namespace HQY_Microservice.Controllers
     public class MemberController : ControllerBase
     {
       
-        private readonly ILogger<MemberController> _logger;
+        private readonly ILoggingService _logger;
         private readonly IMemberRepository _memberRepository;
-        public MemberController(ILogger<MemberController> logger, IMemberRepository memberRepository)
+        public MemberController(ILoggingService logger, IMemberRepository memberRepository)
         {
             _logger = logger;
             _memberRepository = memberRepository;
         }
 
         [HttpGet]
-        public IEnumerable<Member> Get()
+        public IActionResult Get()
         {
+         
             var members = _memberRepository.GetMembers();
-            return members;
-        }
+            _logger.LogInformation("Retrieved {count} members", members.Count());
+            return Ok(members);
+        }      
 
         [HttpGet("{MemberId}", Name = "Get")]
-        public Member Get(int MemberId)
+        public IActionResult GetById(int MemberId)
         {
-            var member = _memberRepository.GetMemberByID(MemberId);
-            return member;
+            var member = _memberRepository.GetMemberByID(MemberId);   
+            if(member == null)
+            {
+                _logger.LogInformation("Unable to find member with Id : {Id}", MemberId);
+                return NotFound();
+            }
+            return Ok(member);
         }
 
         [HttpPut]
@@ -48,14 +58,14 @@ namespace HQY_Microservice.Controllers
                     {
                         _memberRepository.UpdateMember(member);
                         scope.Complete();
-                        return new OkResult();
+                        return Ok(member);
                     }
                 }
             }
             catch(Exception e)
             {
-                _logger.LogError(e.Message);
-                return new StatusCodeResult(404);
+                _logger.LogInformation(e.Message);
+                return NotFound();
 
             }
             return new NoContentResult();

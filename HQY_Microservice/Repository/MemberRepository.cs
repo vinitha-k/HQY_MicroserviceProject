@@ -25,12 +25,13 @@ namespace HQY_Microservice.Repository
             return _dbContext.Members.ToList();
         }
 
-        public void UpdateMember(Member member)
+        public Member UpdateMember(Member member)
         {
             _dbContext.Entry(member).State = EntityState.Modified;
             Save();
+            return member;
         }
-        public void Save()
+        private void Save()
         {
             _dbContext.SaveChanges();
         }

@@ -9,7 +9,7 @@ namespace HQY_Microservice.Repository
     {
         IEnumerable<Member> GetMembers();
         Member GetMemberByID(int MemberId);
-        void UpdateMember(Member member);
-        void Save();
+        Member UpdateMember(Member member);
+
     }
 }

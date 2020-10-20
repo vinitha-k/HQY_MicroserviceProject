@@ -13,11 +13,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace HQY_Microservice
 {
     public class Startup
     {
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,7 +32,9 @@ namespace HQY_Microservice
         {
             services.AddControllers();
             services.AddDbContext<MemberContext>(options => options.UseSqlServer(Configuration.GetConnectionString("HQY_DB")));
-            services.AddTransient<IMemberRepository, MemberRepository>();
+            //services.AddTransient<IMemberRepository, MemberRepository>();
+            services.AddTransient<IMemberRepository, MockMemberRepository>();
+            services.AddSingleton<ILoggingService, TestableLogger>();
             //set up Swagger in this DI container
             services.AddSwaggerGen(options =>
             {
