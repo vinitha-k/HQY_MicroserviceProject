@@ -22,12 +22,12 @@ namespace HQY_Microservice.Controllers
             _memberRepository = memberRepository;
         }
 
-        //[HttpGet]
-        //public IEnumerable<Member> Get()
-        //{
-        //    var members = _memberRepository.GetMembers();
-        //    return members;
-        //}
+        [HttpGet]
+        public IEnumerable<Member> Get()
+        {
+            var members = _memberRepository.GetMembers();
+            return members;
+        }
 
         [HttpGet("{MemberId}", Name = "Get")]
         public Member Get(int MemberId)
